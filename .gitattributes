@@ -1,2 +1,37 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+import numpy as np
+import math
+
+'''
+Volgens mij werkt deze. Het gebruikt Newton_Raphson om het te approximaten.
+Ik ga deze echter nog een andere keer nog beter nalopen, om te checken of ik geen fout heb gemaakt, maar het achterliggende idee werkt.
+'''
+
+c = 3.0 *10**8 #constants
+h =  6.62607015/(10**34)
+lab_1 = 500/(10**9)
+lab_2 = 700/(10**9)
+k = 1.380649/(10**23)
+m_1 = 4.8
+m_2 = 3.5
+con = 1/(10**(0.4*(m_1-m_2)))
+mulc = (lab_2**5)/(lab_1**5)
+
+A = h*c/(lab_2*k)
+B = h*c/(lab_1*k)
+
+
+
+#credits naar https://pythonnumericalmethods.berkeley.edu/notebooks/chapter19.04-Newton-Raphson-Method.html
+f = lambda T: -con + (mulc)*(math.e**(A/T)-1)/(math.e**(B/T)-1)
+f_prime = lambda T: mulc * ((B-A)*((math.e**((A+B)/T))) + (A*math.e**(A/T)) - (B*math.e**(B/T)))/((T**2)*((math.e**(B/T)) - 1)**2)
+
+
+def my_newton(f, df, x0, tol):
+    print(f(x0))
+    if abs(f(x0)) < tol:
+        return x0
+    else:
+        return my_newton(f, df, x0 - f(x0)/df(x0), tol)
+
+estimate = my_newton(f, f_prime, 3500, 1e-12)
+print('Gok:' + str(estimate))
